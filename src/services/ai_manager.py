@@ -25,6 +25,11 @@ try:
 except ImportError:
     HAS_OPENAI = False
 
+try:
+    from services.groq_client import groq_client
+    HAS_GROQ_CLIENT = True
+except ImportError:
+    HAS_GROQ_CLIENT = False
 
 logger = logging.getLogger(__name__)
 
@@ -39,22 +44,33 @@ class AIManager:
                 'available': False,
                 'priority': 1,
                 'error_count': 0,
-                'model': 'gemini-1.5-flash'
+                'model': 'gemini-1.5-flash',
+                'max_errors': 3
             },
-            'openai': {
+            'groq': {
                 'client': None,
                 'available': False,
                 'priority': 2,
                 'error_count': 0,
-                'model': 'gpt-3.5-turbo'
+                'model': 'llama3-70b-8192',
+                'max_errors': 3
             },
-            'huggingface': {
+            'openai': {
                 'client': None,
                 'available': False,
                 'priority': 3,
                 'error_count': 0,
+                'model': 'gpt-3.5-turbo',
+                'max_errors': 3
+            },
+            'huggingface': {
+                'client': None,
+                'available': False,
+                'priority': 4,
+                'error_count': 0,
                 'models': ["HuggingFaceH4/zephyr-7b-beta", "google/flan-t5-base"],
-                'current_model_index': 0
+                'current_model_index': 0,
+                'max_errors': 5
             }
         }
 
@@ -92,6 +108,16 @@ class AIManager:
         else:
             logger.warning("⚠️ Biblioteca 'openai' não instalada. OpenAI desabilitado.")
 
+        # Inicializa Groq
+        try:
+            if HAS_GROQ_CLIENT and groq_client and groq_client.is_enabled():
+                self.providers['groq']['client'] = groq_client
+                self.providers['groq']['available'] = True
+                logger.info("✅ Groq (llama3-70b-8192) inicializado com sucesso")
+            else:
+                logger.warning("⚠️ Groq client não está habilitado")
+        except Exception as e:
+            logger.warning(f"⚠️ Falha ao inicializar Groq: {str(e)}")
 
         # Inicializa HuggingFace
         try:
@@ -110,7 +136,7 @@ class AIManager:
         """Retorna o melhor provedor disponível com base na prioridade e contagem de erros."""
         available_providers = [
             (name, provider) for name, provider in self.providers.items() 
-            if provider['available'] and provider['error_count'] < 5
+            if provider['available'] and provider['error_count'] < provider.get('max_errors', 3)
         ]
 
         if not available_providers:
@@ -131,12 +157,17 @@ class AIManager:
         # Se um provedor específico for solicitado
         if provider:
             if self.providers.get(provider) and self.providers[provider]['available']:
-                 logger.info(f"🤖 Usando provedor solicitado: {provider.upper()}")
-                 try:
-                     return self._call_provider(provider, prompt, max_tokens)
-                 except Exception as e:
-                     logger.error(f"❌ Provedor solicitado {provider.upper()} falhou: {e}")
-                     return None # Não tenta fallback se um provedor específico foi pedido e falhou
+                logger.info(f"🤖 Usando provedor solicitado: {provider.upper()}")
+                try:
+                    result = self._call_provider(provider, prompt, max_tokens)
+                    if result:
+                        return result
+                    else:
+                        raise Exception("Resposta vazia")
+                except Exception as e:
+                    logger.error(f"❌ Provedor solicitado {provider.upper()} falhou: {e}")
+                    self.providers[provider]['error_count'] += 1
+                    return None # Não tenta fallback se um provedor específico foi pedido e falhou
             else:
                 logger.error(f"❌ Provedor solicitado '{provider}' não está disponível.")
                 return None
@@ -157,6 +188,8 @@ class AIManager:
         """Chama a função de geração do provedor especificado."""
         if provider_name == 'gemini':
             return self._generate_with_gemini(prompt, max_tokens)
+        elif provider_name == 'groq':
+            return self._generate_with_groq(prompt, max_tokens)
         elif provider_name == 'openai':
             return self._generate_with_openai(prompt, max_tokens)
         elif provider_name == 'huggingface':
@@ -176,6 +209,15 @@ class AIManager:
             logger.info(f"✅ Gemini gerou {len(response.text)} caracteres")
             return response.text
         raise Exception("Resposta vazia do Gemini")
+
+    def _generate_with_groq(self, prompt: str, max_tokens: int) -> Optional[str]:
+        """Gera conteúdo usando Groq."""
+        client = self.providers['groq']['client']
+        content = client.generate(prompt, max_tokens=min(max_tokens, 8192))
+        if content:
+            logger.info(f"✅ Groq gerou {len(content)} caracteres")
+            return content
+        raise Exception("Resposta vazia do Groq")
 
     def _generate_with_openai(self, prompt: str, max_tokens: int) -> Optional[str]:
         """Gera conteúdo usando OpenAI."""
@@ -226,20 +268,45 @@ class AIManager:
                 continue
         raise Exception("Todos os modelos HuggingFace falharam")
 
+    def reset_provider_errors(self, provider_name: str = None):
+        """Reset contadores de erro dos provedores"""
+        if provider_name:
+            if provider_name in self.providers:
+                self.providers[provider_name]['error_count'] = 0
+                logger.info(f"🔄 Reset erros do provedor: {provider_name}")
+        else:
+            for provider in self.providers.values():
+                provider['error_count'] = 0
+            logger.info("🔄 Reset erros de todos os provedores")
+
     def _try_fallback(self, prompt: str, max_tokens: int, exclude: List[str]) -> Optional[str]:
         """Tenta usar o próximo provedor disponível como fallback."""
         logger.info(f"🔄 Acionando fallback, excluindo: {', '.join(exclude)}")
-        next_provider = self.get_best_provider()
-        if next_provider and next_provider not in exclude:
-            try:
-                return self._call_provider(next_provider, prompt, max_tokens)
-            except Exception as e:
-                logger.error(f"❌ Fallback para {next_provider} também falhou: {e}")
-                self.providers[next_provider]['error_count'] += 1
-                return self._try_fallback(prompt, max_tokens, exclude + [next_provider])
         
-        logger.critical("❌ Todos os provedores de fallback falharam.")
-        return None
+        # Ordena provedores por prioridade, excluindo os que já falharam
+        available_providers = [
+            (name, provider) for name, provider in self.providers.items()
+            if (provider['available'] and 
+                name not in exclude and 
+                provider['error_count'] < provider.get('max_errors', 3))
+        ]
+        
+        if not available_providers:
+            logger.critical("❌ Todos os provedores de fallback falharam.")
+            return None
+        
+        # Ordena por prioridade
+        available_providers.sort(key=lambda x: (x[1]['priority'], x[1]['error_count']))
+        next_provider = available_providers[0][0]
+        
+        logger.info(f"🔄 Tentando fallback para: {next_provider.upper()}")
+        
+        try:
+            return self._call_provider(next_provider, prompt, max_tokens)
+        except Exception as e:
+            logger.error(f"❌ Fallback para {next_provider} também falhou: {e}")
+            self.providers[next_provider]['error_count'] += 1
+            return self._try_fallback(prompt, max_tokens, exclude + [next_provider])
 
 # Instância global
 ai_manager = AIManager()

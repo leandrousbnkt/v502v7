@@ -68,6 +68,7 @@ flask-compress
 flask-cors
 flask-socketio
 google-generativeai
+groq
 gunicorn
 html5lib
 huggingface-hub

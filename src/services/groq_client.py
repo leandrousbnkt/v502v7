@@ -24,9 +24,12 @@ class GroqClient:
         """Inicializa o cliente Groq."""
         self.api_key = os.getenv('GROQ_API_KEY')
         self.client = None
+        self.available = False
+        
         if self.api_key and HAS_GROQ:
             try:
                 self.client = Groq(api_key=self.api_key)
+                self.available = True
                 logger.info("✅ Cliente Groq (llama3-70b-8192) inicializado com sucesso.")
             except Exception as e:
                 logger.error(f"❌ Falha ao inicializar o cliente Groq: {e}", exc_info=True)
@@ -37,7 +40,7 @@ class GroqClient:
 
     def is_enabled(self) -> bool:
         """Verifica se o cliente está configurado e pronto para uso."""
-        return self.client is not None
+        return self.available and self.client is not None
 
     def generate(self, prompt: str, max_tokens: int = 8192) -> Optional[str]:
         """

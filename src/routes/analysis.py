@@ -85,7 +85,29 @@ def analyze_market():
             )
         except Exception as e:
             logger.error(f"❌ Análise GIGANTE falhou: {str(e)}")
-            # NÃO GERA FALLBACK - RETORNA ERRO EXPLÍCITO
+            
+            # Verifica se é erro de IA e sugere soluções
+            if "IA FALHOU" in str(e):
+                error_message = "Todos os provedores de IA estão temporariamente indisponíveis"
+                recommendation = "Aguarde alguns minutos e tente novamente. Os serviços de IA podem estar sobrecarregados."
+                
+                # Verifica quais provedores estão configurados
+                ai_status = ai_manager.get_provider_status()
+                available_providers = [name for name, status in ai_status.items() if status.get('available', False)]
+                
+                if not available_providers:
+                    recommendation = "Configure pelo menos uma API de IA (Gemini, Groq, OpenAI ou HuggingFace)"
+                
+                return jsonify({
+                    'error': error_message,
+                    'message': str(e),
+                    'timestamp': datetime.now().isoformat(),
+                    'recommendation': recommendation,
+                    'available_providers': available_providers,
+                    'retry_suggested': True,
+                    'fallback_available': False
+                }), 503
+            
             return jsonify({
                 'error': 'Análise falhou por dados insuficientes',
                 'message': str(e),
@@ -93,6 +115,7 @@ def analyze_market():
                 'recommendation': 'Configure todas as APIs necessárias e verifique conectividade',
                 'required_apis': [
                     'GEMINI_API_KEY ou OPENAI_API_KEY (obrigatório)',
+                    'GROQ_API_KEY (recomendado para backup)',
                     'GOOGLE_SEARCH_KEY + GOOGLE_CSE_ID (recomendado)',
                     'JINA_API_KEY (recomendado)',
                     'SERPER_API_KEY (opcional)'
@@ -284,6 +307,8 @@ def reset_providers():
         return jsonify({
             'success': True,
             'message': message,
+            'ai_status': ai_manager.get_provider_status(),
+            'search_status': production_search_manager.get_provider_status(),
             'timestamp': datetime.now().isoformat()
         })
         
