@@ -1,0 +1,28 @@
+{
+  "name": "arqv30-enhanced",
+  "version": "2.0.0",
+  "description": "ARQV30 Enhanced v2.0 - Análise Ultra-Detalhada de Mercado",
+  "main": "src/run.py",
+  "scripts": {
+    "start": "python src/run.py",
+    "dev": "python src/run.py",
+    "install": "pip install -r requirements.txt",
+    "test": "python test_simple.py"
+  },
+  "keywords": [
+    "market-analysis",
+    "ai",
+    "business-intelligence",
+    "python",
+    "flask"
+  ],
+  "author": "ARQV30 Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arqv30/enhanced"
+  },
+  "engines": {
+    "python": ">=3.8"
+  }
+}

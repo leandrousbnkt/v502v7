@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARQV30 Enhanced v2.0 - Análise Ultra-Detalhada de Mercado</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for("static", filename="images/favicon.ico") }}">
+</head>         <div class="header-content">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ARQV30 Enhanced" class="logo-img">
+                    <div class="logo-text">
+                        <h1>ARQV30 Enhanced</h1>
+                        <span class="version">v2.0</span>
+                    </div>
+                </div>
+                
+                <div class="header-status">
+                    <div class="status-indicator" id="statusIndicator">
+                        <i class="fas fa-circle"></i>
+                        <span id="statusText">Verificando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h2 class="hero-title">Análise Ultra-Detalhada de Mercado</h2>
+                    <p class="hero-subtitle">
+                        Powered by Artificial Intelligence • Google Gemini Pro 2.5 • Pesquisa Profunda
+                    </p>
+                    <div class="hero-features">
+                        <div class="feature">
+                            <i class="fas fa-brain"></i>
+                            <span>IA Avançada</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-search"></i>
+                            <span>Pesquisa Profunda</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Análise Completa</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Relatório PDF</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analysis Form -->
+            <section class="analysis-section">
+                <div class="form-container">
+                    <form id="analysisForm" class="analysis-form">
+                        <!-- Basic Information -->
+                        <div class="form-group">
+                            <h3 class="section-title">
+                                <i class="fas fa-info-circle"></i>
+                                Informações Básicas
+                            </h3>
+                            
+                            <div class="input-group">
+                                <label for="segmento">Segmento de Mercado *</label>
+                                <input type="text" id="segmento" name="segmento" required 
+                                       placeholder="Ex: Produtos Digitais, E-commerce, Consultoria...">
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="produto">Produto/Serviço</label>
+                                    <input type="text" id="produto" name="produto" 
+                                           placeholder="Nome do seu produto ou serviço">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="preco">Preço (R$)</label>
+                                    <input type="number" id="preco" name="preco" step="0.01" 
+                                           placeholder="997.00">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="publico">Público-Alvo</label>
+                                <textarea id="publico" name="publico" rows="3" 
+                                          placeholder="Descreva seu público-alvo ideal..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Information -->
+                        <div class="form-group">
+                            <h3 class="section-title">
+                                <i class="fas fa-cogs"></i>
+                                Informações Avançadas
+                            </h3>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="objetivo_receita">Objetivo de Receita (R$)</label>
+                                    <input type="number" id="objetivo_receita" name="objetivo_receita" step="0.01" 
+                                           placeholder="100000.00">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="orcamento_marketing">Orçamento Marketing (R$)</label>
+                                    <input type="number" id="orcamento_marketing" name="orcamento_marketing" step="0.01" 
+                                           placeholder="10000.00">
+                                </div>
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="prazo_lancamento">Prazo de Lançamento</label>
+                                    <select id="prazo_lancamento" name="prazo_lancamento">
+                                        <option value="">Selecione...</option>
+                                        <option value="1-3 meses">1-3 meses</option>
+                                        <option value="3-6 meses">3-6 meses</option>
+                                        <option value="6-12 meses">6-12 meses</option>
+                                        <option value="Mais de 1 ano">Mais de 1 ano</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="concorrentes">Principais Concorrentes</label>
+                                    <input type="text" id="concorrentes" name="concorrentes" 
+                                           placeholder="Liste os principais concorrentes...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Deep Search -->
+                        <div class="form-group">
+                            <h3 class="section-title">
+                                <i class="fas fa-search-plus"></i>
+                                Pesquisa Profunda
+                            </h3>
+                            
+                            <div class="input-group">
+                                <label for="query">Query de Pesquisa</label>
+                                <input type="text" id="query" name="query" 
+                                       placeholder="Ex: tendências marketing digital 2024 Brasil">
+                                <small class="input-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    A IA fará uma pesquisa profunda na internet usando esta query
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <h3 class="section-title">
+                                <i class="fas fa-paperclip"></i>
+                                Anexos Inteligentes
+                            </h3>
+                            
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-content">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h4>Arraste arquivos aqui ou clique para selecionar</h4>
+                                    <p>PDF, DOC, XLSX, CSV, TXT, JSON</p>
+                                    <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xlsx,.xls,.csv,.txt,.json">
+                                </div>
+                            </div>
+                            
+                            <div class="uploaded-files" id="uploadedFiles"></div>
+                        </div>
+
+                        <!-- Additional Data -->
+                        <div class="form-group">
+                            <h3 class="section-title">
+                                <i class="fas fa-plus-circle"></i>
+                                Dados Adicionais
+                            </h3>
+                            
+                            <div class="input-group">
+                                <label for="dados_adicionais">Informações Complementares</label>
+                                <textarea id="dados_adicionais" name="dados_adicionais" rows="4" 
+                                          placeholder="Adicione qualquer informação relevante que possa ajudar na análise..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary" id="analyzeBtn">
+                                <i class="fas fa-magic"></i>
+                                <span>Gerar Análise Ultra-Detalhada</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Progress Area -->
+            <section class="progress-section" id="progressArea" style="display: none;">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <h3>🚀 Análise em Progresso</h3>
+                        <p>Gerando relatório ultra-detalhado com pesquisa profunda</p>
+                    </div>
+                    
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-info">
+                        <div class="progress-step">
+                            <span id="currentStep">Iniciando análise...</span>
+                        </div>
+                        <div class="progress-stats">
+                            <span class="step-counter">Etapa: <span id="stepCounter">0/8</span></span>
+                            <span class="estimated-time">Tempo restante: <span id="estimatedTime">--:--</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-details">
+                        <div class="progress-feature">
+                            <i class="fas fa-search"></i>
+                            <span>Pesquisa web massiva REAL em execução</span>
+                        </div>
+                        <div class="progress-feature">
+                            <i class="fas fa-brain"></i>
+                            <span>Múltiplas IAs processando dados REAIS</span>
+                        </div>
+                        <div class="progress-feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Sistemas avançados: Drivers + Provas + Anti-objeção</span>
+                        </div>
+                        <div class="progress-feature">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span style="color: #ff6b6b;">ZERO simulação - Só dados reais</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsArea" style="display: none;">
+                <div class="results-container">
+                    <div class="results-header">
+                        <h3>
+                            <i class="fas fa-chart-bar"></i>
+                            Análise Ultra-Detalhada Concluída
+                        </h3>
+                        <div class="results-actions">
+                            <button class="btn-secondary" id="downloadPdfBtn" style="display: none;">
+                                <i class="fas fa-download"></i>
+                                Download PDF
+                            </button>
+                            <button class="btn-secondary" onclick="location.reload()">
+                                <i class="fas fa-plus"></i>
+                                Nova Análise
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-content">
+                        <!-- Avatar Results -->
+                        <div id="avatarResults" class="result-container"></div>
+                        
+                        <!-- Drivers Results -->
+                        <div id="driversResults" class="result-container"></div>
+                        
+                        <!-- Competition Results -->
+                        <div id="competitionResults" class="result-container"></div>
+                        
+                        <!-- Positioning Results -->
+                        <div id="positioningResults" class="result-container"></div>
+                        
+                        <!-- Keywords Results -->
+                        <div id="keywordsResults" class="result-container"></div>
+                        
+                        <!-- Metrics Results -->
+                        <div id="metricsResults" class="result-container"></div>
+                        
+                        <!-- Funnel Results -->
+                        <div id="funnelResults" class="result-container"></div>
+                        
+                        <!-- Action Plan Results -->
+                        <div id="actionPlanResults" class="result-container"></div>
+                        
+                        <!-- Insights Results -->
+                        <div id="insightsResults" class="result-container"></div>
+                        
+                        <!-- New Ultra-Detailed Sections -->
+                        <div id="visualProofsResults" class="result-container"></div>
+                        
+                        <div id="antiObjectionResults" class="result-container"></div>
+                        
+                        <div id="prePitchResults" class="result-container"></div>
+                        
+                        <!-- Future Predictions Results -->
+                        <div id="futureResults" class="result-container"></div>
+                        
+                        <!-- Research Results -->
+                        <div id="researchResults" class="result-container"></div>
+                        
+                        <!-- Metadata Results -->
+                        <div id="metadataResults" class="result-container"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- System Status Indicator -->
+    <div id="systemStatusBar" style="
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        border-top: 1px solid var(--glass-border);
+        padding: 8px 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        font-size: 12px;
+        z-index: 100;
+    ">
+        <div class="system-status real-data">
+            <i class="fas fa-check-circle"></i>
+            <span>Sistema configurado para dados REAIS</span>
+        </div>
+        <div class="system-status" id="apiStatus">
+            <i class="fas fa-cog fa-spin"></i>
+            <span>Verificando APIs...</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/upload.js"></script>
+    <script src="/static/js/analysis.js"></script>
+</body>
+</html>
+
